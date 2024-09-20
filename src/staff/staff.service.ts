@@ -1,26 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { CreateStaffDto } from './dto/create-staff.dto';
-import { UpdateStaffDto } from './dto/update-staff.dto';
+import { Prisma } from '@prisma/client';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class StaffService {
-  create(createStaffDto: CreateStaffDto) {
-    return 'This action adds a new staff';
+  constructor(private readonly databaseService: DatabaseService) {}
+  async create(createStaffDto: Prisma.UserCreateInput) {
+    return this.databaseService.user.create({
+      data: createStaffDto,
+    });
   }
 
-  findAll() {
-    return `This action returns all staff`;
+  async findAll(role?: 'Intern' | 'Admin') {
+    if (role)
+      return this.databaseService.user.findMany({
+        where: { role },
+      });
+    return this.databaseService.user.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} staff`;
+  async findOne(id: number) {
+    return this.databaseService.user.findUnique({
+      where: { id },
+    });
   }
 
-  update(id: number, updateStaffDto: UpdateStaffDto) {
-    return `This action updates a #${id} staff`;
+  async update(id: number, updateStaffDto: Prisma.UserUpdateInput) {
+    return this.databaseService.user.update({
+      where: { id },
+      data: updateStaffDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} staff`;
+  async remove(id: number) {
+    return this.databaseService.user.delete({
+      where: { id },
+    });
   }
 }
