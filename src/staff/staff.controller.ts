@@ -10,7 +10,9 @@ import {
 } from '@nestjs/common';
 import { StaffService } from './staff.service';
 import { Prisma } from '@prisma/client';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('staff')
 export class StaffController {
   constructor(private readonly staffService: StaffService) {}
@@ -20,11 +22,14 @@ export class StaffController {
     return this.staffService.create(createStaffDto);
   }
 
+  @SkipThrottle({ default: false }) //rate limit this endpoint.
   @Get()
   findAll(@Query('role') role?: 'Intern' | 'Admin') {
     return this.staffService.findAll(role);
   }
 
+  //override existing rate limit available globally
+  @Throttle({ short: { ttl: 2000, limit: 1 } })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.staffService.findOne(+id);
