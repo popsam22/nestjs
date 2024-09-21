@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { StaffModule } from './staff/staff.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { APP_GUARD } from '@nestjs/core';
         limit: 2,
       },
     ]),
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [
